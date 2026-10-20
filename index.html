@@ -1,0 +1,1175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Education-adjusted ACE-III calculator</title>
+<meta name="description" content="Education-adjusted ACE-III calculator: expected ACE-III score by years of education and age, with a reference table and a cohort simulator. Research prototype built from 342 community controls; illustrative values, not population norms. Calculadora del ACE-III ajustada por escolaridad (EN/ES).">
+<meta name="color-scheme" content="light dark">
+<meta name="author" content="Fernando Márquez, Memory and Brain Health Unit, Hospital Dr. Guillermo Rawson, San Juan, Argentina; developed in agreement with Dr. Diana Bruno">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Education-adjusted ACE-III calculator">
+<meta property="og:description" content="Education-adjusted ACE-III calculator: expected ACE-III score by years of education and age, with a reference table and a cohort simulator. Research prototype built from 342 community controls; illustrative values, not population norms. Calculadora del ACE-III ajustada por escolaridad (EN/ES).">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_AR">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+<style>
+/* reset mínimo */
+*,*::before,*::after{box-sizing:border-box}
+html{-moz-text-size-adjust:none;-webkit-text-size-adjust:none;text-size-adjust:none}
+body,h1,h2,h3,h4,p,figure,blockquote,dl,dd{margin:0}
+ul[role=list],ol[role=list]{list-style:none;margin:0;padding:0}
+h1,h2,h3,h4{text-wrap:balance}
+img,picture,svg{max-width:100%;display:block}
+input,button,textarea,select{font:inherit;color:inherit}
+table{border-collapse:collapse}
+</style>
+</head>
+<body>
+<button class="tema" id="tema" type="button">Dark theme</button>
+<style>
+/* ─────────────────────────────────────────────  tokens */
+:root{
+  --paper:#FAFAF7; --panel:#FFFFFF; --sunk:#F2F2ED;
+  --rule:#E3E2DB; --rule-2:#CFCEC4;
+  --ink:#0B0B0B; --ink-2:#52514E; --ink-3:#8A8880;
+  --blue:#2A78D6; --blue-soft:rgba(42,120,214,.14); --blue-ink:#1B5AA8;
+  --crit:#D03B3B; --crit-soft:rgba(208,59,59,.13);
+  --warn:#B37D06; --warn-soft:rgba(250,178,25,.16);
+  --focus:#2A78D6;
+  --shadow:0 1px 2px rgba(11,11,11,.05), 0 6px 20px -12px rgba(11,11,11,.22);
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#131419; --panel:#1A1C22; --sunk:#212430;
+    --rule:#2C2F38; --rule-2:#3D4150;
+    --ink:#EFEFEA; --ink-2:#A9ABA5; --ink-3:#767973;
+    --blue:#5EA2F2; --blue-soft:rgba(94,162,242,.18); --blue-ink:#8CBEF7;
+    --crit:#F1696D; --crit-soft:rgba(241,105,109,.17);
+    --warn:#E8B54A; --warn-soft:rgba(232,181,74,.17);
+    --focus:#5EA2F2;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 26px -14px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="light"]{
+  --paper:#FAFAF7; --panel:#FFFFFF; --sunk:#F2F2ED;
+  --rule:#E3E2DB; --rule-2:#CFCEC4;
+  --ink:#0B0B0B; --ink-2:#52514E; --ink-3:#8A8880;
+  --blue:#2A78D6; --blue-soft:rgba(42,120,214,.14); --blue-ink:#1B5AA8;
+  --crit:#D03B3B; --crit-soft:rgba(208,59,59,.13);
+  --warn:#B37D06; --warn-soft:rgba(250,178,25,.16);
+  --focus:#2A78D6;
+  --shadow:0 1px 2px rgba(11,11,11,.05), 0 6px 20px -12px rgba(11,11,11,.22);
+}
+:root[data-theme="dark"]{
+  --paper:#131419; --panel:#1A1C22; --sunk:#212430;
+  --rule:#2C2F38; --rule-2:#3D4150;
+  --ink:#EFEFEA; --ink-2:#A9ABA5; --ink-3:#767973;
+  --blue:#5EA2F2; --blue-soft:rgba(94,162,242,.18); --blue-ink:#8CBEF7;
+  --crit:#F1696D; --crit-soft:rgba(241,105,109,.17);
+  --warn:#E8B54A; --warn-soft:rgba(232,181,74,.17);
+  --focus:#5EA2F2;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 26px -14px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px; border-radius:2px}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+
+/* ─────────────────────────────────────────────  masthead */
+.masthead{border-bottom:1px solid var(--rule); background:var(--panel)}
+.masthead .wrap{padding-top:26px; padding-bottom:22px;
+  display:flex; flex-wrap:wrap; gap:22px; align-items:flex-end; justify-content:space-between}
+.mast-id{max-width:60ch}
+.eyebrow{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 8px}
+.masthead h1{margin:0; font-size:clamp(22px,3.1vw,31px); font-weight:640;
+  letter-spacing:-.021em; line-height:1.16; text-wrap:balance}
+.mast-sub{margin:9px 0 0; color:var(--ink-2); font-size:14px; max-width:56ch}
+.flag{
+  flex:0 0 auto; max-width:32ch; border:1px solid var(--rule-2); border-left:3px solid var(--warn);
+  background:var(--warn-soft); padding:10px 13px; font-size:12.2px; line-height:1.45; color:var(--ink-2);
+}
+.flag b{color:var(--ink); font-weight:620}
+/* selector de idioma (EN ⇄ ES) */
+.lang{flex:0 0 auto; align-self:flex-start; background:var(--sunk); border:1px solid var(--rule-2);
+  color:var(--ink-2); font-family:var(--mono); font-size:11px; letter-spacing:.09em;
+  text-transform:uppercase; padding:6px 11px; cursor:pointer}
+.lang:hover{border-color:var(--ink-3); color:var(--ink)}
+
+/* ─────────────────────────────────────────────  sections */
+.band{border-bottom:1px solid var(--rule)}
+.band > .wrap{padding-top:38px; padding-bottom:38px}
+/* encabezado de panel, con la misma convención que las figuras del trabajo */
+.band-head{display:flex; align-items:baseline; gap:18px; margin-bottom:20px; flex-wrap:wrap}
+.band-head h2{margin:0; font-size:18.5px; font-weight:620; letter-spacing:-.014em}
+.band-head p{margin:0; color:var(--ink-2); font-size:13.4px; max-width:62ch}
+.marker{font-size:18.5px; font-weight:620; color:var(--ink); flex:0 0 auto;
+  font-style:italic; letter-spacing:-.014em; margin-right:-8px}
+
+/* ─────────────────────────────────────────────  instrument */
+.instrument{display:grid; grid-template-columns:minmax(250px,300px) 1fr; gap:22px; align-items:start}
+.controls{background:var(--panel); border:1px solid var(--rule); box-shadow:var(--shadow); padding:18px}
+.field + .field{margin-top:17px}
+.field > label, .field > .lbl{display:flex; justify-content:space-between; align-items:baseline;
+  font-size:12px; letter-spacing:.055em; text-transform:uppercase; color:var(--ink-2); margin-bottom:6px}
+.val{font-family:var(--mono); font-size:15px; color:var(--ink); letter-spacing:0;
+  text-transform:none; font-variant-numeric:tabular-nums}
+.val small{color:var(--ink-3); font-size:11px}
+input[type=range]{width:100%; margin:0; accent-color:var(--blue); height:22px}
+.seg{display:flex; border:1px solid var(--rule-2)}
+.seg button{flex:1; background:transparent; border:0; border-right:1px solid var(--rule-2);
+  padding:7px 4px; font-family:var(--sans); font-size:12.5px; color:var(--ink-2); cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--paper); font-weight:600}
+.hint{margin:14px 0 0; padding-top:13px; border-top:1px solid var(--rule);
+  font-size:11.8px; color:var(--ink-3); line-height:1.5}
+.presets{display:flex; flex-wrap:wrap; gap:6px; margin-top:9px}
+.presets button{background:var(--sunk); border:1px solid var(--rule-2); color:var(--ink-2);
+  font-family:var(--sans); font-size:11.5px; padding:4px 8px; cursor:pointer}
+.presets button:hover{border-color:var(--ink-3); color:var(--ink)}
+
+/* readout */
+.readout{display:flex; flex-direction:column; gap:16px}
+.metrics{display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  background:var(--rule); border:1px solid var(--rule)}
+.metric{background:var(--panel); padding:14px 15px}
+.metric dt{font-size:11px; letter-spacing:.055em; text-transform:uppercase; color:var(--ink-3); margin:0}
+.metric dd{margin:5px 0 0; font-family:var(--mono); font-size:26px; font-weight:500;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1.1}
+.metric dd .u{font-size:12px; color:var(--ink-3); font-weight:400; letter-spacing:0}
+.metric.is-blue dd{color:var(--blue)}
+
+.verdicts{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.verdict{background:var(--panel); border:1px solid var(--rule); border-top:3px solid var(--rule-2);
+  padding:14px 16px; box-shadow:var(--shadow)}
+.verdict.on{border-top-color:var(--crit)}
+.verdict.off{border-top-color:var(--blue)}
+.verdict h3{margin:0 0 3px; font-size:12px; letter-spacing:.055em; text-transform:uppercase; color:var(--ink-3);
+  font-weight:600}
+.verdict .rule{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); display:block; margin-bottom:9px}
+.verdict .call{font-size:17px; font-weight:620; letter-spacing:-.012em; display:flex; align-items:center; gap:8px}
+.verdict.on .call{color:var(--crit)}
+.verdict.off .call{color:var(--blue)}
+.dot{width:9px; height:9px; border-radius:50%; background:currentColor; flex:0 0 auto}
+.verdict .why{margin:6px 0 0; font-size:12.6px; color:var(--ink-2); line-height:1.45}
+
+.note{border:1px solid var(--rule-2); background:var(--panel); padding:15px 18px; box-shadow:var(--shadow)}
+.note.discord{border-left:3px solid var(--crit); background:var(--crit-soft)}
+.note.accord{border-left:3px solid var(--rule-2)}
+.note p{margin:0; font-family:var(--serif); font-size:16.5px; line-height:1.52; color:var(--ink)}
+.note .tag{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); margin-bottom:6px}
+
+/* aviso de extrapolación: fuera del soporte muestral declarado */
+.extrapola{border:1px solid var(--warn); border-left:6px solid var(--warn);
+  background:var(--warn-soft); padding:13px 16px; font-size:13.6px; line-height:1.5; color:var(--ink)}
+.extrapola .tag{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--warn); margin-bottom:5px; font-weight:700}
+.extrapola p{margin:0}
+.extrapola b{font-weight:650}
+
+/* modelo alternativo beta-binomial (segundo plano) */
+.sens{margin:0; padding:9px 14px; background:var(--sunk); border:1px solid var(--rule);
+  font-size:12.3px; color:var(--ink-2); line-height:1.5}
+.sens .num{font-family:var(--mono); color:var(--ink); font-variant-numeric:tabular-nums}
+.sens a{color:inherit; text-decoration:underline; text-underline-offset:2px}
+
+.foot a{color:var(--blue-ink); text-decoration:underline; text-underline-offset:2px}
+
+/* ─────────────────────────────────────────────  charts */
+.canvas{background:var(--panel); border:1px solid var(--rule); box-shadow:var(--shadow); padding:8px 10px 4px}
+svg{display:block; width:100%; height:auto}
+.legend{display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; font-size:12.3px; color:var(--ink-2)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.swatch{width:16px; height:3px; flex:0 0 auto}
+.swatch.dotted{height:0; border-top:2px dotted currentColor}
+.swatch.area{height:11px; opacity:.55}
+
+/* ─────────────────────────────────────────────  table */
+.tablebox{overflow-x:auto; background:var(--panel); border:1px solid var(--rule); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:660px; font-variant-numeric:tabular-nums}
+caption{caption-side:top; text-align:left; padding:14px 16px 12px; font-size:12.8px; color:var(--ink-2)}
+th,td{padding:5px 8px; text-align:center; font-family:var(--mono); font-size:12.7px;
+  border-bottom:1px solid var(--rule)}
+thead th{font-family:var(--sans); font-size:11px; letter-spacing:.055em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600; border-bottom:1px solid var(--rule-2); padding-bottom:9px}
+tbody th{font-family:var(--mono); font-size:12.7px; color:var(--ink-2); font-weight:500; text-align:right;
+  padding-right:12px}
+td .p5{display:block; font-size:10.4px; color:var(--ink-3); margin-top:-2px}
+td.cut{color:var(--crit)}
+tr.reg-crit th, tr.reg-crit td{background:var(--crit-soft)}
+tr.reg-warn th, tr.reg-warn td{background:var(--warn-soft)}
+tr.reg-blue th, tr.reg-blue td{background:var(--blue-soft)}
+tr.jump th, tr.jump td{border-top:2px dashed var(--rule-2)}
+td.here{outline:2px solid var(--ink); outline-offset:-2px; position:relative}
+tr.hererow th{color:var(--ink); font-weight:700}
+th.herecol{color:var(--ink)}
+
+/* ─────────────────────────────────────────────  simulator */
+.sim{display:grid; grid-template-columns:minmax(250px,300px) 1fr; gap:22px; align-items:start}
+.simout{display:flex; flex-direction:column; gap:16px}
+.compare{width:100%; border-collapse:collapse; min-width:0; background:var(--panel);
+  border:1px solid var(--rule); box-shadow:var(--shadow)}
+.compare th,.compare td{border-bottom:1px solid var(--rule); padding:9px 14px}
+.compare thead th{text-align:center}
+.compare thead th:first-child{text-align:left}
+.compare tbody th{text-align:left; font-family:var(--sans); font-size:13.2px; color:var(--ink-2);
+  font-weight:500; padding-right:10px}
+.compare tbody th small{display:block; font-size:11.4px; color:var(--ink-3)}
+.compare td{font-family:var(--mono); font-size:15.5px; text-align:center; font-variant-numeric:tabular-nums}
+.compare .col-a{color:var(--crit)} .compare .col-b{color:var(--blue)}
+.compare tr.key td{font-size:19px; font-weight:600}
+.compare tr:last-child th,.compare tr:last-child td{border-bottom:0}
+.simhead{font-family:var(--serif); font-size:16.5px; line-height:1.5; margin:0;
+  border-left:3px solid var(--rule-2); padding-left:14px}
+.runbar{display:flex; gap:8px; margin-top:16px}
+.run{flex:1; background:var(--ink); color:var(--paper); border:0; padding:10px;
+  font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer}
+.run:hover{opacity:.87}
+
+/* ─────────────────────────────────────────────  footer */
+.foot{background:var(--panel)}
+.foot .wrap{padding-top:30px; padding-bottom:44px;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:26px}
+.foot h4{margin:0 0 7px; font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3)}
+.foot p{margin:0; font-size:12.6px; color:var(--ink-2); line-height:1.55}
+.foot code{font-family:var(--mono); font-size:11.8px; color:var(--ink)}
+
+@media (max-width:860px){
+  .instrument,.sim{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .verdicts{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+.tema{position:fixed;right:14px;top:14px;z-index:50;background:var(--panel);
+  border:1px solid var(--rule-2);color:var(--ink-2);padding:6px 11px;font-size:12px;
+  font-family:var(--sans);cursor:pointer;box-shadow:var(--shadow);line-height:1.2}
+.tema:hover{color:var(--ink);border-color:var(--ink-3)}
+@media print{.tema{display:none}}
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="mast-id">
+      <p class="eyebrow" data-i18n="eyebrow">Memory and Brain Health Unit · Hospital Rawson · San Juan · research prototype</p>
+      <h1 data-i18n="h1">Education-adjusted ACE-III calculator</h1>
+      <p class="mast-sub" data-i18n="mast_sub">Expected ACE-III score by years of education and age. The
+        current rule compares everyone against one of two numbers. This tool compares each person against
+        what is expected for their education and age.</p>
+    </div>
+    <p class="flag" data-i18n="flag"><b>Illustrative values.</b> They come from 342 community participants in
+      San Juan who meet the study's control criterion: word-list recognition score ≥ 10, no history of stroke or
+      head trauma, and independence in basic activities of daily living. <b>Not population norms:</b> a
+      methodological demonstration based on those 342 controls. The control group may include people with
+      undetected mild impairment, which would make the 5th percentile a lenient threshold. <b>Do not use
+      these values to make decisions about a patient.</b></p>
+    <button type="button" class="lang" id="idioma">Español</button>
+  </div>
+</header>
+
+<main>
+<!-- ══════════════════════════════════════ 1. evaluar -->
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <span class="marker">a</span>
+      <h2 data-i18n="a_h2">Assess an individual</h2>
+      <p data-i18n="a_p">The two rules are applied in parallel to the same data.</p>
+    </div>
+
+    <div class="instrument">
+      <form class="controls" id="form" autocomplete="off">
+        <div class="field">
+          <label for="edu"><span data-i18n="lbl_edu">Education</span> <span class="val" id="edu-v">10 <small>yrs</small></span></label>
+          <input type="range" id="edu" min="0" max="20" step="1" value="10">
+        </div>
+        <div class="field">
+          <label for="edad"><span data-i18n="lbl_edad">Age</span> <span class="val" id="edad-v">65 <small>yrs</small></span></label>
+          <input type="range" id="edad" min="46" max="85" step="1" value="65">
+        </div>
+        <div class="field">
+          <span class="lbl" data-i18n="lbl_sexo">Sex</span>
+          <div class="seg" id="sexo" role="group" aria-label="Sex" data-i18n-aria="lbl_sexo">
+            <button type="button" data-s="P" aria-pressed="true" data-i18n="sx_P">Sample average</button>
+            <button type="button" data-s="M" aria-pressed="false" data-i18n="sx_M">Female</button>
+            <button type="button" data-s="H" aria-pressed="false" data-i18n="sx_H">Male</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="ace"><span data-i18n="lbl_ace">ACE-III score</span> <span class="val" id="ace-v">72 <small>/ 100</small></span></label>
+          <input type="range" id="ace" min="0" max="100" step="1" value="72">
+        </div>
+        <div class="field">
+          <span class="lbl" data-i18n="lbl_ej">Fictitious examples</span>
+          <div class="presets" id="presets">
+            <button type="button" data-p="5,70,70">5 yrs educ. · age 70 · ACE 70</button>
+            <button type="button" data-p="10,65,70">10 yrs educ. · age 65 · ACE 70</button>
+            <button type="button" data-p="5,70,65">5 yrs educ. · age 70 · ACE 65</button>
+            <button type="button" data-p="15,60,90">15 yrs educ. · age 60 · ACE 90</button>
+          </div>
+        </div>
+        <p class="hint" data-i18n="hint_eval">For each combination of education and age, the model estimates
+          two things: the average score of an unimpaired person and how widely scores spread around it. The
+          5th percentile marks the 5% who score lowest within that group.</p>
+      </form>
+
+      <div class="readout">
+        <div class="extrapola" id="extrapola" hidden aria-live="polite">
+          <span class="tag" data-i18n="extrapola_tag">Extrapolation zone</span>
+          <p><span id="extrapola-txt">—</span> <b data-i18n="extrapola_b">Sampling support here is sparse:
+            the percentile is a model extrapolation, not an observation.</b></p>
+        </div>
+        <dl class="metrics">
+          <div class="metric is-blue"><dt data-i18n="met_esp">Expected</dt><dd id="m-esp">—</dd></div>
+          <div class="metric is-blue"><dt data-i18n="met_p5">5th percentile</dt><dd id="m-p5">—</dd></div>
+          <div class="metric"><dt data-i18n="met_dist">Distance</dt><dd id="m-z">—<span class="u"> SD</span></dd></div>
+          <div class="metric"><dt data-i18n="met_pct">Percentile</dt><dd id="m-pct">—</dd></div>
+        </dl>
+        <p class="sens" data-i18n="sens_html">Alternative model (beta-binomial): percentile
+          <span class="num" id="sens-pct">—</span><span id="sens-dif" hidden>. The two models differ by
+          <span class="num" id="sens-dif-n">—</span> percentile points for this combination: here the
+          test's ceiling skews the distribution more, and the normal approximation becomes less
+          accurate</span>.</p>
+
+        <div class="verdicts">
+          <div class="verdict" id="v-regla">
+            <h3 data-i18n="vr_h3">Current rule</h3>
+            <span class="rule" data-i18n="vr_rule">cutoff 68 if &lt; 12 yrs · 86 if ≥ 12 yrs</span>
+            <div class="call"><span class="dot"></span><span id="v-regla-call">—</span></div>
+            <p class="why" id="v-regla-why">—</p>
+          </div>
+          <div class="verdict" id="v-modelo">
+            <h3 data-i18n="vm_h3">Continuous model</h3>
+            <span class="rule" data-i18n="vm_rule">cutoff at the 5th percentile of the person's own group</span>
+            <div class="call"><span class="dot"></span><span id="v-modelo-call">—</span></div>
+            <p class="why" id="v-modelo-why">—</p>
+          </div>
+        </div>
+
+        <div class="note" id="nota">
+          <span class="tag" id="nota-tag">—</span>
+          <p id="nota-txt">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 2. gráfico -->
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <span class="marker">b</span>
+      <h2 data-i18n="b_h2">Where the person falls</h2>
+      <p data-i18n="b_p">The curve and the cutoff at the selected age. The black dot is the person being assessed.</p>
+    </div>
+    <div class="canvas"><svg id="chart" viewBox="0 0 940 470" role="img"
+      aria-label="Expected performance, 5th percentile, and current cutoff by years of education"
+      data-i18n-aria="chart_aria"></svg></div>
+    <div class="legend">
+      <span><i class="swatch area" style="background:var(--blue)"></i> <span data-i18n="leg_b1">range between the 5th percentile and the expected score</span></span>
+      <span><i class="swatch" style="background:var(--blue)"></i> <span data-i18n="leg_b2">expected performance without impairment</span></span>
+      <span style="color:var(--blue)"><i class="swatch dotted"></i> <span data-i18n="leg_b3">5th percentile</span></span>
+      <span><i class="swatch" style="background:var(--crit)"></i> <span data-i18n="leg_b4">current cutoff</span></span>
+      <span><i class="swatch" style="background:var(--ink); height:9px; width:9px; border-radius:50%"></i> <span data-i18n="leg_b5">person being assessed</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 3. tabla -->
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <span class="marker">c</span>
+      <h2 data-i18n="c_h2">Reference table</h2>
+      <p data-i18n="c_p">The outlined cell corresponds to the person being assessed. The background shows
+        where the current cutoff falls relative to the curve.</p>
+    </div>
+    <div class="tablebox">
+      <table id="tabla">
+        <caption data-i18n="caption">Expected score and, beneath it, the 5th percentile. Sex set to the sample average.</caption>
+      </table>
+    </div>
+    <div class="legend">
+      <span><i class="swatch area" style="background:var(--crit)"></i> <span data-i18n="leg_c1">the cutoff exceeds the expected score</span></span>
+      <span><i class="swatch area" style="background:var(--warn)"></i> <span data-i18n="leg_c2">the cutoff falls between the expected score and the 5th percentile</span></span>
+      <span><i class="swatch area" style="background:var(--blue)"></i> <span data-i18n="leg_c3">the cutoff falls below the 5th percentile</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 4. simulador -->
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <span class="marker">d</span>
+      <h2 data-i18n="d_h2">Simulate a cohort</h2>
+      <p data-i18n="d_p">People generated with an education and age distribution approximating that of the
+        San Juan controls. Some have a true deficit; the rest do not.</p>
+    </div>
+
+    <div class="sim">
+      <form class="controls" id="simform" autocomplete="off">
+        <div class="field">
+          <label for="n"><span data-i18n="lbl_n">People</span> <span class="val" id="n-v">600</span></label>
+          <input type="range" id="n" min="100" max="2000" step="50" value="600">
+        </div>
+        <div class="field">
+          <label for="prev"><span data-i18n="lbl_prev">With a true deficit</span> <span class="val" id="prev-v">20 <small>%</small></span></label>
+          <input type="range" id="prev" min="0" max="60" step="5" value="20">
+        </div>
+        <div class="field">
+          <label for="def"><span data-i18n="lbl_def">Deficit size</span> <span class="val" id="def-v">15 <small>points</small></span></label>
+          <input type="range" id="def" min="3" max="30" step="1" value="15">
+        </div>
+        <div class="runbar"><button type="button" class="run" id="run" data-i18n="run">Run again</button></div>
+        <p class="hint" data-i18n="hint_sim">A deficit is defined as a drop of N points from that same
+          person's expected score. People are drawn from the model itself: the simulation shows what the
+          model implies, not independent evidence.</p>
+      </form>
+
+      <div class="simout">
+        <p class="simhead" id="simhead">—</p>
+        <div class="canvas"><svg id="scatter" viewBox="0 0 940 330" role="img"
+          aria-label="Simulated people by years of education and score" data-i18n-aria="scatter_aria"></svg></div>
+        <div class="legend" id="scatleg">
+          <span><i class="swatch" style="background:var(--ink-3); height:9px; width:9px; border-radius:50%"></i> <span data-i18n="leg_d1">no deficit</span></span>
+          <span><i class="swatch" style="background:var(--crit); height:9px; width:9px; border-radius:50%"></i> <span data-i18n="leg_d2">true deficit</span></span>
+        </div>
+        <div class="tablebox">
+          <table class="compare">
+            <thead><tr><th data-i18n="cmp_h0">In the simulated cohort</th><th class="col-a" data-i18n="cmp_h1">Current rule</th>
+              <th class="col-b" data-i18n="cmp_h2">Continuous model</th></tr></thead>
+            <tbody id="cmp"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div>
+      <h4 data-i18n="f1_h">How it was estimated</h4>
+      <p data-i18n="f1_p">Regression of the total score on years of education, its square, age, and sex,
+        with a second model for the dispersion — <code>log(residual²) ~ education + age</code> — that lets
+        variability change with education. The dispersion includes Harvey's correction, without which it
+        would be underestimated 1.9-fold. Calibration: within the sample, 5.8% of controls fall below the
+        nominal 5th percentile of the model shown here; under cross-validation, 5.6% fall below it with the
+        beta-binomial model used as a robustness check.</p>
+    </div>
+    <div>
+      <h4 data-i18n="f2_h">Who it describes</h4>
+      <p data-i18n="f2_p">The sample comprises 342 community participants from San Juan who meet four
+        conditions — word-list recognition score ≥ 10, no stroke, no head trauma, and independence in basic
+        activities of daily living — a criterion independent of the ACE-III and with no educational gradient
+        (χ² p = 0.504). The values are not population norms but a methodological demonstration based on
+        these controls. The sample may include undetected mild impairment, which would make the 5th
+        percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse
+        below 3 years of education.</p>
+    </div>
+    <div>
+      <h4 data-i18n="f3_h">What it does not do</h4>
+      <p data-i18n="f3_p">It neither diagnoses nor replaces clinical assessment. A score below the 5th
+        percentile indicates that such performance is uncommon among unimpaired people of the same education
+        and age; nothing more.</p>
+    </div>
+    <div>
+      <h4 data-i18n="f4_h">Origin of the two-step rule</h4>
+      <p data-i18n="f4_p">The two-step rule used in practice (86 from 12 years of education, 68 below)
+        combines cutoffs from different sources. The 86 comes from the Argentine–Chilean validation of the
+        ACE-III, which proposed a single cutoff in a sample averaging more than 13 years of education; the 68
+        comes from another study. Neither source proposed the combined rule.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ── modelo ─────────────────────────────────────────────────────────── */
+const MU = {i:65.813247, mujer:1.499348, edu:2.938937, edu2:-0.063579, edad:-0.174990};
+/* Intercepto con la corrección de Harvey (1976): estimar log(sigma^2) por MCO sobre
+   log(residuo^2) subestima la varianza en E[log(chi2_1)] = -1,27036. Sin corregir, el 18,7 %
+   de los controles cae bajo el percentil 5 nominal; corrigiendo, el 5,8 % (cobertura dentro
+   de la muestra, según la verificación que acompaña a los coeficientes del estudio). */
+const SESGO_LOGCHI2 = 1.2703628454614782;
+const SD = {i:2.989475 + SESGO_LOGCHI2, edu:-0.081857, edad:0.013816};
+const P_MUJER = 0.824561;
+const SEXW = {P:P_MUJER, M:1, H:0};
+const N_REF = 342;
+/* Distribución de escolaridad para el simulador (0…20 años), con supresión de celdas
+   chicas: los años se agrupan en bandas de al menos 5 controles cada una, y el total de
+   cada banda se reparte en partes iguales entre sus años. Ningún recuento por año menor
+   que 5 queda escrito ni se puede deducir. Formato: [desde, hasta, controles en la banda]. */
+const EDU_BANDAS = [[0,1,9],[2,2,10],[3,3,12],[4,4,5],[5,5,9],[6,6,29],[7,7,70],[8,8,8],
+  [9,9,24],[10,10,8],[11,11,8],[12,12,53],[13,13,11],[14,14,9],[15,15,30],[16,16,11],
+  [17,17,10],[18,18,14],[19,20,6]];
+const EDU_W = EDU_BANDAS.flatMap(([a,b,n]) => Array(b-a+1).fill(n/(b-a+1)));
+const EDU_CUM = EDU_W.reduce((a,v)=>(a.push((a[a.length-1]||0)+v),a),[]);
+const EDU_TOT = EDU_CUM[EDU_CUM.length-1];
+
+const esperado = (edu,edad,sexo="P") =>
+  MU.i + MU.mujer*SEXW[sexo] + MU.edu*edu + MU.edu2*edu*edu + MU.edad*edad;
+const sigma = (edu,edad) => Math.sqrt(Math.exp(SD.i + SD.edu*edu + SD.edad*edad));
+const p5de  = (edu,edad,sexo="P") => esperado(edu,edad,sexo) - 1.645*sigma(edu,edad);
+const corte = edu => edu >= 12 ? 86 : 68;
+
+/* ── frontera de soporte muestral ──────────────────────────────────────
+   Edad: el aviso usa el tramo bien representado en los controles (50 a 80 años), no los
+   extremos observados, que son datos individuales. La escolaridad llega de 0 a 20, pero
+   con soporte denso recién desde los 3 años; por debajo, los controles son muy pocos.
+   Fuera de estas fronteras el resultado se muestra igual, con aviso.
+   Devuelve descriptores {k, a}: la clave del diccionario i18n y sus argumentos. */
+const SOPORTE = {edadMin:50, edadMax:80, eduDensa:3};
+function motivosExtrapolacion(edu,edad){
+  const m = [];
+  if(edu < SOPORTE.eduDensa){
+    const nBaja = Math.round(EDU_W.slice(0,SOPORTE.eduDensa).reduce((a,v)=>a+v,0));
+    m.push({k:"motivo_edu", a:[SOPORTE.eduDensa, nBaja, N_REF]});
+  }
+  if(edad < SOPORTE.edadMin || edad > SOPORTE.edadMax){
+    m.push({k:"motivo_edad", a:[edad, SOPORTE.edadMin, SOPORTE.edadMax]});
+  }
+  return m;
+}
+
+/* ── modelo alternativo (verificación de robustez): beta-binomial ───────
+   Coeficientes del ajuste beta-binomial del estudio (familia ganadora por BIC y
+   por log-score con validación cruzada). Parametrización de gamlss.dist::BB:
+   mu es probabilidad, sigma dispersión; alfa = mu/sigma, beta = (1−mu)/sigma.
+   Percentil de un puntaje entero a con convención mid-p:
+   P(Y < a) + ½·P(Y = a), con Y ~ BetaBinomial(100, alfa, beta). */
+const BB_MU = {i:0.632902, edu:0.127213, edu2:-0.001432, edad:-0.008062, mujer:0.101886};
+const BB_SG = {i:-2.704582, edu:-0.056729};
+
+/* log-gamma por Lanczos (g = 7, 9 coeficientes); error relativo < 1e-13 para x > 0 */
+const LANCZOS = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+  771.32342877765313, -176.61502916214059, 12.507343278686905,
+  -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+function lgamma(x){
+  if(x < 0.5) return Math.log(Math.PI/Math.sin(Math.PI*x)) - lgamma(1-x);
+  x -= 1;
+  let a = LANCZOS[0];
+  const t = x + 7.5;
+  for(let i=1; i<9; i++) a += LANCZOS[i]/(x+i);
+  return 0.5*Math.log(2*Math.PI) + (x+0.5)*Math.log(t) - t + Math.log(a);
+}
+const lbeta = (a,b) => lgamma(a) + lgamma(b) - lgamma(a+b);
+const lchoose = (n,k) => lgamma(n+1) - lgamma(k+1) - lgamma(n-k+1);
+
+function pctBB(edu,edad,sexo,ace){
+  const eta = BB_MU.i + BB_MU.edu*edu + BB_MU.edu2*edu*edu + BB_MU.edad*edad
+            + BB_MU.mujer*SEXW[sexo];
+  const mu = 1/(1+Math.exp(-eta));
+  const sg = Math.exp(BB_SG.i + BB_SG.edu*edu);
+  const a = mu/sg, b = (1-mu)/sg;
+  const lb = lbeta(a,b);
+  let acum = 0;
+  for(let k=0; k<=ace; k++){
+    const pk = Math.exp(lchoose(100,k) + lbeta(k+a, 100-k+b) - lb);
+    acum += (k < ace) ? pk : 0.5*pk;      /* mid-p: P(Y<ace) + ½·P(Y=ace) */
+  }
+  return 100*acum;
+}
+
+function erf(x){
+  const s = x < 0 ? -1 : 1; x = Math.abs(x);
+  const t = 1/(1+0.3275911*x);
+  const y = 1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return s*y;
+}
+const Phi = z => 0.5*(1+erf(z/Math.SQRT2));
+let spare = null;
+function randn(){
+  if(spare!==null){ const v=spare; spare=null; return v; }
+  let u=0,v=0; while(u===0) u=Math.random(); while(v===0) v=Math.random();
+  const r=Math.sqrt(-2*Math.log(u)), t=2*Math.PI*v;
+  spare = r*Math.sin(t); return r*Math.cos(t);
+}
+const nf = n => n.toFixed(0).replace("-","−");
+/* coma decimal en español, punto en inglés; los cálculos no cambian */
+const dec = (n,d=1) => n.toFixed(d).replace(".", LANG==="es" ? "," : ".").replace("-","−");
+/* percentil 5 escrito junto al puntaje (entero): un decimal; si a ese redondeo coincidiera
+   con el puntaje, se agregan decimales para que la frase no se contradiga a la vista */
+function decP(p, ace){
+  for(let d=1; d<4; d++) if(Number(p.toFixed(d)) !== ace) return dec(p,d);
+  return dec(p,4);
+}
+
+/* ── regímenes ──────────────────────────────────────────────────────── */
+function regimen(edu,edad){
+  const e=esperado(edu,edad), p=p5de(edu,edad), c=corte(edu);
+  if(c > e) return "crit";
+  if(c > p) return "warn";
+  return "blue";
+}
+
+/* ── idioma ─────────────────────────────────────────────────────────────
+   Inglés por defecto; el español completo se conserva como segunda lengua.
+   La elección persiste en localStorage ("idioma"); si falla, queda "en". */
+let LANG = "en";
+try{ const g = localStorage.getItem("idioma"); if(g === "es" || g === "en") LANG = g; }catch(e){}
+
+const I18N = {
+en:{
+  titulo:"Education-adjusted ACE-III calculator",
+  eyebrow:"Memory and Brain Health Unit · Hospital Rawson · San Juan · research prototype",
+  h1:"Education-adjusted ACE-III calculator",
+  mast_sub:`Expected ACE-III score by years of education and age. The current rule compares everyone against one of two numbers. This tool compares each person against what is expected for their education and age.`,
+  flag:`<b>Illustrative values.</b> They come from 342 community participants in San Juan who meet the study's control criterion: word-list recognition score ≥ 10, no history of stroke or head trauma, and independence in basic activities of daily living. <b>Not population norms:</b> a methodological demonstration based on those 342 controls. The control group may include people with undetected mild impairment, which would make the 5th percentile a lenient threshold. <b>Do not use these values to make decisions about a patient.</b>`,
+  a_h2:"Assess an individual",
+  a_p:"The two rules are applied in parallel to the same data.",
+  lbl_edu:"Education", lbl_edad:"Age", lbl_sexo:"Sex", lbl_ace:"ACE-III score", lbl_ej:"Fictitious examples",
+  sx_P:"Sample average", sx_M:"Female", sx_H:"Male",
+  u_anios:"yrs", u_de:"SD", u_pts:"points",
+  preset:(e,a,s)=>`${e} yrs educ. · age ${a} · ACE ${s}`,
+  hint_eval:`For each combination of education and age, the model estimates two things: the average score of an unimpaired person and how widely scores spread around it. The 5th percentile marks the 5% who score lowest within that group.`,
+  extrapola_tag:"Extrapolation zone",
+  extrapola_b:`Sampling support here is sparse: the percentile is a model extrapolation, not an observation.`,
+  motivo_edu:(min,n,N)=>`Only ${n} of the ${N} controls have fewer than ${min} years of education, and very few people in the full study sample have no formal education.`,
+  motivo_edad:(edad,a,b)=>`An age of ${edad} falls outside the age range well represented among the controls (${a} to ${b} years).`,
+  met_esp:"Expected", met_p5:"5th percentile", met_dist:"Distance", met_pct:"Percentile",
+  sens_html:`Alternative model (beta-binomial): percentile <span class="num" id="sens-pct">—</span><span id="sens-dif" hidden>. The two models differ by <span class="num" id="sens-dif-n">—</span> percentile points for this combination: here the test's ceiling skews the distribution more, and the normal approximation becomes less accurate</span>.`,
+  vr_h3:"Current rule",
+  vr_rule:"cutoff 68 if &lt; 12 yrs · 86 if ≥ 12 yrs",
+  vm_h3:"Continuous model",
+  vm_rule:"cutoff at the 5th percentile of the person's own group",
+  call_si:"Below cutoff", call_no:"At or above cutoff",
+  call_aparta:"Below the expected range", call_dentro:"Within the expected range",
+  regla_why:(ace,s,c,edu)=>`${ace} ${s ? "is below" : "meets or exceeds"} the cutoff of ${c}, which applies to everyone with ${edu >= 12 ? "12 or more years of education" : "fewer than 12 years of education"}.`,
+  modelo_why:(ace,ap,p)=> ap
+    ? `${ace} falls below the 5th percentile of this person's group, which sits at ${p}.`
+    : `${ace} sits above the 5th percentile of this person's group, which is at ${p}.`,
+  tag_discord:"The rules disagree", tag_accord:"Both rules agree",
+  grupo:(edu,edad)=>`${edu} ${edu===1?"year":"years"} of education at age ${edad}`,
+  nota1:(g,x,e)=>`The score falls below the current cutoff, yet ${x}% of unimpaired people with ${g} also score below it. The expected score in that group is ${e}.`,
+  nota2:(c,d,g,pct)=>`The score meets the cutoff of ${c}, yet it is ${d} ${d==="1"?"point":"points"} below the expected score for ${g}. Only ${pct}% of unimpaired people in that group score this low.`,
+  nota3:(g,p)=>`The score falls below the current cutoff and also below the 5th percentile of unimpaired people with ${g}, which sits at ${p}.`,
+  nota4:(g,p)=>`The score meets the current cutoff and lies within the expected range for ${g}: above the 5th percentile, which sits at ${p}.`,
+  b_h2:"Where the person falls",
+  b_p:"The curve and the cutoff at the selected age. The black dot is the person being assessed.",
+  chart_aria:"Expected performance, 5th percentile, and current cutoff by years of education",
+  leg_b1:"range between the 5th percentile and the expected score",
+  leg_b2:"expected performance without impairment",
+  leg_b3:"5th percentile", leg_b4:"current cutoff", leg_b5:"person being assessed",
+  eje_x:"Years of education completed", eje_y:"ACE-III (points)",
+  pts_lab:ace=>`${ace} points`,
+  c_h2:"Reference table",
+  c_p:"The outlined cell corresponds to the person being assessed. The background shows where the current cutoff falls relative to the curve.",
+  caption:"Expected score and, beneath it, the 5th percentile. Sex set to the sample average.",
+  th_edu:"Education (yrs)", th_corte:"Cutoff", th_edad:a=>`age ${a}`,
+  leg_c1:"the cutoff exceeds the expected score",
+  leg_c2:"the cutoff falls between the expected score and the 5th percentile",
+  leg_c3:"the cutoff falls below the 5th percentile",
+  d_h2:"Simulate a cohort",
+  d_p:"People generated with an education and age distribution approximating that of the San Juan controls. Some have a true deficit; the rest do not.",
+  lbl_n:"People", lbl_prev:"With a true deficit", lbl_def:"Deficit size",
+  run:"Run again",
+  hint_sim:`A deficit is defined as a drop of N points from that same person's expected score. People are drawn from the model itself: the simulation shows what the model implies, not independent evidence.`,
+  scatter_aria:"Simulated people by years of education and score",
+  leg_d1:"no deficit", leg_d2:"true deficit",
+  cmp_h0:"In the simulated cohort", cmp_h1:"Current rule", cmp_h2:"Continuous model",
+  cmp_r1:"Sensitivity", cmp_sub_con:n=>`of ${n} people with a deficit`,
+  cmp_r2:"Specificity", cmp_sub_sin:n=>`of ${n} people without a deficit`,
+  cmp_r3:"False positives, fewer than 7 years of education",
+  cmp_r4:"False positives, 12 or more years of education", cmp_sub_fp:"among people without a deficit",
+  cmp_r5:"Difference between the two education groups", cmp_sub_gap:"in false-positive rate",
+  pct_fmt:v=>`${nf(v)}%`,
+  simhead0:(n,a,b)=>`Among ${n} people without a deficit, ${a}% of those with fewer than 7 years of education and ${b}% of those with 12 or more years score below the current cutoff.`,
+  simhead1:(sa,sb,ga,gb)=>`With sensitivity of ${sa}% (current rule) and ${sb}% (continuous model), the false-positive rate of the current rule differs by ${ga} ${ga==="1"?"percentage point":"percentage points"} between the lowest and highest education groups; that of the continuous model, by ${gb}.`,
+  f1_h:"How it was estimated",
+  f1_p:`Regression of the total score on years of education, its square, age, and sex, with a second model for the dispersion — <code>log(residual²) ~ education + age</code> — that lets variability change with education. The dispersion includes Harvey's correction, without which it would be underestimated 1.9-fold. Calibration: within the sample, 5.8% of controls fall below the nominal 5th percentile of the model shown here; under cross-validation, 5.6% fall below it with the beta-binomial model used as a robustness check.`,
+  f2_h:"Who it describes",
+  f2_p:`The sample comprises 342 community participants from San Juan who meet four conditions — word-list recognition score ≥ 10, no stroke, no head trauma, and independence in basic activities of daily living — a criterion independent of the ACE-III and with no educational gradient (χ² p = 0.504). The values are not population norms but a methodological demonstration based on these controls. The sample may include undetected mild impairment, which would make the 5th percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse below 3 years of education.`,
+  f3_h:"What it does not do",
+  f3_p:`It neither diagnoses nor replaces clinical assessment. A score below the 5th percentile indicates that such performance is uncommon among unimpaired people of the same education and age; nothing more.`,
+  f4_h:"Origin of the two-step rule",
+  f4_p:`The two-step rule used in practice (86 from 12 years of education, 68 below) combines cutoffs from different sources. The 86 comes from the Argentine–Chilean validation of the ACE-III, which proposed a single cutoff in a sample averaging more than 13 years of education; the 68 comes from another study. Neither source proposed the combined rule.`
+},
+es:{
+  titulo:"Calculadora del ACE-III ajustada por escolaridad",
+  eyebrow:"Unidad de Memoria y Salud Cerebral · Hospital Rawson · San Juan · prototipo de investigación",
+  h1:"Calculadora del ACE-III ajustada por escolaridad",
+  mast_sub:`Rendimiento esperado en el ACE-III según escolaridad y edad. La regla vigente compara a todos contra uno de dos números. Esta herramienta compara a cada persona contra lo esperable para su escolaridad y su edad.`,
+  flag:`<b>Valores ilustrativos.</b> Provienen de 342 participantes comunitarios de San Juan que cumplen el criterio de control del estudio: puntaje de reconocimiento de la lista de palabras ≥ 10, sin antecedente de accidente cerebrovascular ni de traumatismo de cráneo, e independientes en las actividades básicas de la vida diaria. <b>No son normas poblacionales:</b> son una demostración metodológica sobre esos 342 controles. El grupo control puede incluir personas con deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. <b>No deben usarse para decidir sobre un paciente.</b>`,
+  a_h2:"Evaluar una persona",
+  a_p:"Las dos reglas se aplican en paralelo sobre los mismos datos.",
+  lbl_edu:"Escolaridad", lbl_edad:"Edad", lbl_sexo:"Sexo", lbl_ace:"Puntaje ACE-III", lbl_ej:"Ejemplos ficticios",
+  sx_P:"Promedio", sx_M:"Mujer", sx_H:"Hombre",
+  u_anios:"años", u_de:"DE", u_pts:"puntos",
+  preset:(e,a,s)=>`${e} años esc. · edad ${a} · ACE ${s}`,
+  hint_eval:`El modelo estima dos cosas para cada combinación de escolaridad y edad: el puntaje promedio de una persona sin deterioro y cuánto se dispersan los puntajes a su alrededor. El percentil 5 marca el 5 % que rinde más bajo dentro de ese grupo.`,
+  extrapola_tag:"Zona de extrapolación",
+  extrapola_b:`El soporte muestral aquí es escaso: el percentil es una extrapolación del modelo, no una observación.`,
+  motivo_edu:(min,n,N)=>`Con menos de ${min} años de escolaridad hay solo ${n} de los ${N} controles, y en toda la muestra del estudio son muy pocas las personas sin escolaridad formal.`,
+  motivo_edad:(edad,a,b)=>`La edad de ${edad} años queda fuera del rango bien representado en los controles (${a} a ${b} años).`,
+  met_esp:"Esperado", met_p5:"Percentil 5", met_dist:"Distancia", met_pct:"Percentil",
+  sens_html:`Modelo alternativo (beta-binomial): percentil <span class="num" id="sens-pct">—</span><span id="sens-dif" hidden>. Los dos modelos difieren en <span class="num" id="sens-dif-n">—</span> puntos percentilares en esta combinación: aquí la asimetría que impone el techo del instrumento pesa más y la aproximación normal pierde precisión</span>.`,
+  vr_h3:"Regla vigente",
+  vr_rule:"corte 68 si &lt; 12 años · 86 si ≥ 12 años",
+  vm_h3:"Modelo continuo",
+  vm_rule:"corte en el percentil 5 de su propio grupo",
+  call_si:"Señala", call_no:"No señala",
+  call_aparta:"Se aparta", call_dentro:"Dentro de lo esperable",
+  regla_why:(ace,s,c,edu)=>`${ace} ${s ? "está por debajo del" : "alcanza o supera el"} corte de ${c}, que se aplica a toda persona con ${edu >= 12 ? "12 años de escolaridad o más" : "menos de 12 años de escolaridad"}.`,
+  modelo_why:(ace,ap,p)=> ap
+    ? `${ace} queda por debajo del percentil 5 de su grupo, que está en ${p}.`
+    : `${ace} queda por encima del percentil 5 de su grupo, que está en ${p}.`,
+  tag_discord:"Las reglas no coinciden", tag_accord:"Las dos reglas coinciden",
+  grupo:(edu,edad)=>`${edu} ${edu===1?"año":"años"} de escolaridad y ${edad} años de edad`,
+  nota1:(g,x,e)=>`La regla vigente señala este puntaje, pero entre las personas sin deterioro de ${g} un ${x} % rinde por debajo de ese mismo corte. El rendimiento esperado en ese grupo es ${e}.`,
+  nota2:(c,d,g,pct)=>`El puntaje alcanza el corte de ${c} y no queda señalado, pero está ${d} ${d==="1"?"punto":"puntos"} por debajo de lo esperado para ${g}. Solo el ${pct} % de las personas sin deterioro de ese grupo rinde tan bajo.`,
+  nota3:(g,p)=>`El puntaje queda por debajo del corte vigente y también por debajo del percentil 5 de las personas sin deterioro de ${g}, que está en ${p}.`,
+  nota4:(g,p)=>`El puntaje alcanza el corte vigente y se ubica dentro del rango esperable para ${g}: por encima del percentil 5, que está en ${p}.`,
+  b_h2:"Dónde cae la persona",
+  b_p:"La curva y el corte, a la edad seleccionada. El punto negro es la persona evaluada.",
+  chart_aria:"Rendimiento esperado, percentil 5 y corte vigente según años de escolaridad",
+  leg_b1:"rango entre el percentil 5 y el esperado",
+  leg_b2:"rendimiento esperado sin deterioro",
+  leg_b3:"percentil 5", leg_b4:"corte vigente", leg_b5:"persona evaluada",
+  eje_x:"Años de escolaridad completos", eje_y:"ACE-III (puntos)",
+  pts_lab:ace=>`${ace} puntos`,
+  c_h2:"Tabla de referencia",
+  c_p:"La celda recuadrada corresponde a la persona evaluada. El fondo indica dónde cae el corte vigente respecto de la curva.",
+  caption:"Puntaje esperado y, debajo, el percentil 5. Sexo promedio de la muestra.",
+  th_edu:"Escolaridad", th_corte:"Corte", th_edad:a=>`${a} años`,
+  leg_c1:"el corte supera al rendimiento esperado",
+  leg_c2:"el corte cae entre el esperado y el percentil 5",
+  leg_c3:"el corte cae por debajo del percentil 5",
+  d_h2:"Simular una cohorte",
+  d_p:"Personas generadas con una escolaridad y una edad aproximadas a las observadas en los controles de San Juan. Una parte tiene un déficit real; el resto, no.",
+  lbl_n:"Personas", lbl_prev:"Con déficit real", lbl_def:"Tamaño del déficit",
+  run:"Volver a simular",
+  hint_sim:`El déficit se define como una caída de N puntos respecto del rendimiento esperado de esa misma persona. Las personas se extraen del propio modelo: la simulación muestra lo que el modelo implica, no evidencia independiente.`,
+  scatter_aria:"Personas simuladas según escolaridad y puntaje",
+  leg_d1:"sin déficit", leg_d2:"con déficit real",
+  cmp_h0:"Sobre la cohorte simulada", cmp_h1:"Regla vigente", cmp_h2:"Modelo continuo",
+  cmp_r1:"Detecta a quien tiene el déficit", cmp_sub_con:n=>`sobre ${n} personas con déficit`,
+  cmp_r2:"No señala a quien no lo tiene", cmp_sub_sin:n=>`sobre ${n} personas sin déficit`,
+  cmp_r3:"Señala sin déficit, menos de 7 años",
+  cmp_r4:"Señala sin déficit, 12 años o más", cmp_sub_fp:"señalamientos sin motivo",
+  cmp_r5:"Diferencia entre esos dos extremos", cmp_sub_gap:"cuánto depende de la escolaridad",
+  pct_fmt:v=>`${nf(v)} %`,
+  simhead0:(n,a,b)=>`Entre ${n} personas sin déficit, la regla vigente señala al ${a} % de las de menos de 7 años de escolaridad y al ${b} % de las de 12 años o más.`,
+  simhead1:(sa,sb,ga,gb)=>`Con una detección de ${sa} % frente a ${sb} %, los señalamientos sin motivo de la regla vigente varían ${ga} ${ga==="1"?"punto porcentual":"puntos porcentuales"} entre los extremos de escolaridad; los del modelo continuo, ${gb}.`,
+  f1_h:"Cómo se estimó",
+  f1_p:`Regresión del puntaje total sobre escolaridad, escolaridad al cuadrado, edad y sexo, con un segundo modelo para la dispersión — <code>log(residuo²) ~ escolaridad + edad</code> — que permite que la variabilidad cambie con la escolaridad. La dispersión lleva la corrección de Harvey, sin la cual quedaría subestimada 1,9 veces. Calibración: dentro de la muestra, el 5,8 % de los controles cae bajo el percentil 5 nominal del modelo de esta página; con validación cruzada, el 5,6 % cae bajo ese percentil con el modelo beta-binomial, usado como verificación de robustez.`,
+  f2_h:"Sobre quiénes",
+  f2_p:`La muestra está formada por 342 participantes comunitarios de San Juan que cumplen cuatro condiciones —puntaje de reconocimiento de la lista de palabras ≥ 10, sin accidente cerebrovascular, sin traumatismo de cráneo e independientes en las actividades básicas de la vida diaria—, un criterio independiente del ACE-III y sin gradiente educativo (χ² p = 0,504). Los valores no son normas poblacionales: son una demostración metodológica sobre esos controles. La muestra puede contener deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. La mayoría de los controles tiene entre 50 y 80 años; con menos de 3 años de escolaridad, los datos son escasos.`,
+  f3_h:"Qué no hace",
+  f3_p:`No diagnostica ni reemplaza la evaluación clínica. Un puntaje por debajo del percentil 5 indica que ese rendimiento es infrecuente en personas sin deterioro de la misma escolaridad y edad; nada más que eso.`,
+  f4_h:"Procedencia de la regla de dos escalones",
+  f4_p:`La regla de dos escalones que usa la práctica (86 desde los 12 años de escolaridad, 68 por debajo) combina cortes de fuentes distintas. El 86 proviene de la validación argentino-chilena del ACE-III, que propuso un corte único en una muestra con más de 13 años de escolaridad en promedio; el 68, de otro estudio. Ninguna de las dos fuentes propuso la regla combinada.`
+}
+};
+const tx = k => I18N[LANG][k];
+
+/* ── estado ─────────────────────────────────────────────────────────── */
+const S = {edu:10, edad:65, sexo:"P", ace:72};
+const EDADES = [50,55,60,65,70,75,80];
+const $ = id => document.getElementById(id);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function aplicarIdioma(){
+  document.documentElement.lang = LANG;
+  document.title = tx("titulo");
+  document.querySelectorAll("[data-i18n]").forEach(n=>{ n.innerHTML = tx(n.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-aria]").forEach(n=>{ n.setAttribute("aria-label", tx(n.dataset.i18nAria)); });
+  $("presets").querySelectorAll("button").forEach(b=>{
+    const [edu,edad,ace] = b.dataset.p.split(",");
+    b.textContent = tx("preset")(edu,edad,ace);
+  });
+  const bi = $("idioma");
+  bi.textContent = LANG === "en" ? "Español" : "English";
+  bi.setAttribute("aria-label", LANG === "en" ? "Cambiar a español" : "Switch to English");
+  /* valores del simulador que llevan unidad */
+  $("n-v").textContent = SIM.n;
+  $("prev-v").innerHTML = `${SIM.prev} <small>%</small>`;
+  $("def-v").innerHTML  = `${SIM.def} <small>${tx("u_pts")}</small>`;
+}
+
+/* ── SVG helpers ────────────────────────────────────────────────────── */
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, txt){
+  const n = document.createElementNS(NS, tag);
+  for(const k in attrs) n.setAttribute(k, attrs[k]);
+  if(txt !== undefined) n.textContent = txt;
+  return n;
+}
+/* el() crea nodos SVG; las tablas necesitan elementos HTML comunes */
+function hel(tag, attrs, txt){
+  const n = document.createElement(tag);
+  for(const k in attrs) n.setAttribute(k, attrs[k]);
+  if(txt !== undefined) n.textContent = txt;
+  return n;
+}
+
+/* ── gráfico principal ──────────────────────────────────────────────── */
+const CH = {w:940, h:470, l:62, r:18, t:16, b:44, y0:35, y1:100};
+function drawChart(){
+  const svg = $("chart"); svg.textContent = "";
+  const {w,h,l,r,t,b,y0,y1} = CH;
+  const X = e => l + (e/20)*(w-l-r);
+  const Y = v => t + (1-(v-y0)/(y1-y0))*(h-t-b);
+  const C = {blue:css("--blue"), crit:css("--crit"), warn:css("--warn"),
+             ink:css("--ink"), ink2:css("--ink-2"), ink3:css("--ink-3"), rule:css("--rule")};
+
+  const E = Array.from({length:81},(_,i)=>i/4);            // 0…20 en pasos de 0,25
+  const esp = E.map(e=>esperado(e,S.edad));
+  const p5  = E.map(e=>p5de(e,S.edad));
+
+  /* franjas por régimen */
+  let run = null;
+  for(let e=0; e<=20; e++){
+    const g = regimen(e,S.edad);
+    if(!run || run.g !== g){ if(run) paint(run); run = {g, a:e, b:e}; }
+    else run.b = e;
+  }
+  paint(run);
+  function paint(rn){
+    svg.appendChild(el("rect",{x:X(Math.max(0,rn.a-0.5)), y:t,
+      width:X(Math.min(20,rn.b+0.5))-X(Math.max(0,rn.a-0.5)), height:h-t-b,
+      fill:C[rn.g], opacity:0.07}));
+  }
+
+  /* grilla */
+  for(let v=40; v<=100; v+=10){
+    svg.appendChild(el("line",{x1:l, x2:w-r, y1:Y(v), y2:Y(v), stroke:C.rule, "stroke-width":1}));
+    svg.appendChild(el("text",{x:l-10, y:Y(v)+4, "text-anchor":"end", "font-size":11.5,
+      fill:C.ink3, "font-family":"var(--mono)"}, String(v)));
+  }
+  for(let e=0; e<=20; e+=2){
+    svg.appendChild(el("text",{x:X(e), y:h-b+20, "text-anchor":"middle", "font-size":11.5,
+      fill:C.ink3, "font-family":"var(--mono)"}, String(e)));
+  }
+  svg.appendChild(el("text",{x:(l+w-r)/2, y:h-6, "text-anchor":"middle", "font-size":12,
+    fill:C.ink2}, tx("eje_x")));
+  svg.appendChild(el("text",{x:16, y:(t+h-b)/2, "text-anchor":"middle", "font-size":12, fill:C.ink2,
+    transform:`rotate(-90 16 ${(t+h-b)/2})`}, tx("eje_y")));
+
+  /* banda p5–esperado */
+  const band = E.map((e,i)=>`${X(e)},${Y(Math.min(100,esp[i]))}`).join(" ") + " " +
+               E.slice().reverse().map((e,i)=>`${X(e)},${Y(p5[E.length-1-i])}`).join(" ");
+  svg.appendChild(el("polygon",{points:band, fill:C.blue, opacity:0.15}));
+
+  /* corte vigente */
+  svg.appendChild(el("path",{d:`M ${X(0)} ${Y(68)} L ${X(11.5)} ${Y(68)} L ${X(11.5)} ${Y(86)} L ${X(20)} ${Y(86)}`,
+    fill:"none", stroke:C.crit, "stroke-width":2.8}));
+
+  /* curvas */
+  svg.appendChild(el("polyline",{points:E.map((e,i)=>`${X(e)},${Y(p5[i])}`).join(" "),
+    fill:"none", stroke:C.blue, "stroke-width":1.7, "stroke-dasharray":"2.5 3.5"}));
+  svg.appendChild(el("polyline",{points:E.map((e,i)=>`${X(e)},${Y(Math.min(100,esp[i]))}`).join(" "),
+    fill:"none", stroke:C.blue, "stroke-width":2.8}));
+
+  /* persona */
+  const px = X(S.edu), py = Y(Math.max(y0,Math.min(y1,S.ace)));
+  const pe = Y(Math.min(100,esperado(S.edu,S.edad,S.sexo)));
+  svg.appendChild(el("line",{x1:px, x2:px, y1:pe, y2:py, stroke:C.ink, "stroke-width":1,
+    "stroke-dasharray":"2 3", opacity:0.55}));
+  svg.appendChild(el("circle",{cx:px, cy:py, r:7.5, fill:css("--panel"), stroke:C.ink, "stroke-width":2.6}));
+  svg.appendChild(el("circle",{cx:px, cy:py, r:3.2, fill:C.ink}));
+  const lab = tx("pts_lab")(S.ace);
+  const side = S.edu > 13 ? -1 : 1;
+  svg.appendChild(el("text",{x:px + side*14, y:py + 4.5, "text-anchor":side>0?"start":"end",
+    "font-size":12.5, "font-weight":600, fill:C.ink, "font-family":"var(--mono)"}, lab));
+
+  /* salto */
+  svg.appendChild(el("line",{x1:X(11.5), x2:X(11.5), y1:t, y2:h-b, stroke:C.ink2,
+    "stroke-width":1.2, "stroke-dasharray":"5 4", opacity:0.55}));
+}
+
+/* ── tabla ──────────────────────────────────────────────────────────── */
+function drawTable(){
+  const tb = $("tabla");
+  [...tb.querySelectorAll("thead,tbody")].forEach(n=>n.remove());
+  const near = EDADES.reduce((a,b)=>Math.abs(b-S.edad)<Math.abs(a-S.edad)?b:a);
+
+  const thead = hel("thead"); const hr = hel("tr");
+  hr.appendChild(hel("th",{scope:"col"},tx("th_edu")));
+  hr.appendChild(hel("th",{scope:"col"},tx("th_corte")));
+  EDADES.forEach(a=>{
+    const th = hel("th",{scope:"col"}, tx("th_edad")(a));
+    if(a===near) th.className = "herecol";
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr); tb.appendChild(thead);
+
+  const tbody = hel("tbody");
+  for(let e=0; e<=20; e++){
+    const tr = hel("tr");
+    tr.className = "reg-" + regimen(e,near);
+    if(e===12) tr.classList.add("jump");
+    if(e===S.edu) tr.classList.add("hererow");
+    const th = hel("th",{scope:"row"}, String(e)); tr.appendChild(th);
+    const tc = hel("td",{},String(corte(e))); tc.className="cut"; tr.appendChild(tc);
+    EDADES.forEach(a=>{
+      const td = hel("td");
+      td.appendChild(document.createTextNode(nf(esperado(e,a))));
+      const s = hel("span",{class:"p5"}, "(" + nf(p5de(e,a)) + ")");
+      td.appendChild(s);
+      if(e===S.edu && a===near) td.classList.add("here");
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+  tb.appendChild(tbody);
+}
+
+/* ── lectura ────────────────────────────────────────────────────────── */
+function render(){
+  const {edu,edad,sexo,ace} = S;
+  const e = esperado(edu,edad,sexo), sg = sigma(edu,edad), p = e - 1.645*sg, c = corte(edu);
+  const z = (ace - e)/sg, pct = 100*Phi(z);
+
+  $("edu-v").innerHTML  = `${edu} <small>${tx("u_anios")}</small>`;
+  $("edad-v").innerHTML = `${edad} <small>${tx("u_anios")}</small>`;
+  $("ace-v").innerHTML  = `${ace} <small>/ 100</small>`;
+  $("m-esp").textContent = nf(e);
+  $("m-p5").textContent  = nf(p);
+  $("m-z").innerHTML     = `${dec(z,2)}<span class="u"> ${tx("u_de")}</span>`;
+  $("m-pct").textContent = pct < 1 ? "<1" : pct > 99 ? ">99" : nf(pct);
+
+  /* frontera de soporte: el resultado se muestra igual, con aviso prominente */
+  const motivos = motivosExtrapolacion(edu,edad);
+  $("extrapola").hidden = motivos.length === 0;
+  $("extrapola-txt").textContent = motivos.map(m=>tx(m.k)(...m.a)).join(" ");
+
+  /* modelo alternativo (beta-binomial) */
+  const pctbb = pctBB(edu,edad,sexo,ace);
+  $("sens-pct").textContent = pctbb < 1 ? "<1" : pctbb > 99 ? ">99" : nf(pctbb);
+  const difbb = Math.abs(pct - pctbb);
+  $("sens-dif").hidden = difbb <= 3;
+  $("sens-dif-n").textContent = dec(difbb,1);
+
+  const señala = ace < c, aparta = ace < p;
+  const vr = $("v-regla"), vm = $("v-modelo");
+  vr.className = "verdict " + (señala ? "on" : "off");
+  vm.className = "verdict " + (aparta ? "on" : "off");
+  $("v-regla-call").textContent  = señala ? tx("call_si") : tx("call_no");
+  $("v-modelo-call").textContent = aparta ? tx("call_aparta") : tx("call_dentro");
+  $("v-regla-why").textContent  = tx("regla_why")(ace,señala,c,edu);
+  $("v-modelo-why").textContent = tx("modelo_why")(ace,aparta,decP(p,ace));
+
+  const nota = $("nota"), tag = $("nota-tag"), txt = $("nota-txt");
+  const grupo = tx("grupo")(edu,edad);
+  if(señala && !aparta){
+    nota.className = "note discord"; tag.textContent = tx("tag_discord");
+    txt.textContent = tx("nota1")(grupo, nf(100*Phi((c-e)/sg)), nf(e));
+  } else if(!señala && aparta){
+    nota.className = "note discord"; tag.textContent = tx("tag_discord");
+    txt.textContent = tx("nota2")(c, nf(e-ace), grupo, nf(pct));
+  } else if(señala && aparta){
+    nota.className = "note accord"; tag.textContent = tx("tag_accord");
+    txt.textContent = tx("nota3")(grupo, decP(p,ace));
+  } else {
+    nota.className = "note accord"; tag.textContent = tx("tag_accord");
+    txt.textContent = tx("nota4")(grupo, decP(p,ace));
+  }
+
+  drawChart(); drawTable();
+}
+
+/* ── simulación ─────────────────────────────────────────────────────── */
+const SIM = {n:600, prev:20, def:15, data:[]};
+function sampleEdu(){
+  const u = Math.random()*EDU_TOT;
+  for(let i=0;i<EDU_CUM.length;i++) if(u < EDU_CUM[i]) return i;
+  return 20;
+}
+function simulate(){
+  const out = [];
+  for(let i=0;i<SIM.n;i++){
+    const edu = sampleEdu();
+    let edad = Math.round(63.3 + 8.3*randn());
+    edad = Math.max(46, Math.min(85, edad));
+    const sexo = Math.random() < P_MUJER ? "M" : "H";
+    const deficit = Math.random() < SIM.prev/100;
+    const base = esperado(edu,edad,sexo) - (deficit ? SIM.def : 0);
+    const ace = Math.max(0, Math.min(100, Math.round(base + sigma(edu,edad)*randn())));
+    out.push({edu, edad, ace, deficit,
+              señala: ace < corte(edu), aparta: ace < p5de(edu,edad,sexo)});
+  }
+  SIM.data = out;
+  drawScatter(); drawCompare();
+}
+function drawScatter(){
+  const svg = $("scatter"); svg.textContent = "";
+  const w=940,h=330,l=62,r=18,t=14,b=42, y0=20, y1=100;
+  const X = e => l + (e/20)*(w-l-r);
+  const Y = v => t + (1-(v-y0)/(y1-y0))*(h-t-b);
+  const C = {blue:css("--blue"), crit:css("--crit"), ink3:css("--ink-3"), ink2:css("--ink-2"),
+             rule:css("--rule")};
+  for(let v=20; v<=100; v+=20){
+    svg.appendChild(el("line",{x1:l,x2:w-r,y1:Y(v),y2:Y(v),stroke:C.rule,"stroke-width":1}));
+    svg.appendChild(el("text",{x:l-10,y:Y(v)+4,"text-anchor":"end","font-size":11.5,fill:C.ink3,
+      "font-family":"var(--mono)"},String(v)));
+  }
+  for(let e=0;e<=20;e+=2)
+    svg.appendChild(el("text",{x:X(e),y:h-b+20,"text-anchor":"middle","font-size":11.5,fill:C.ink3,
+      "font-family":"var(--mono)"},String(e)));
+  svg.appendChild(el("text",{x:(l+w-r)/2,y:h-6,"text-anchor":"middle","font-size":12,fill:C.ink2},
+    tx("eje_x")));
+
+  SIM.data.forEach(d=>{
+    const jx = (Math.random()-0.5)*0.62;
+    svg.appendChild(el("circle",{cx:X(d.edu+jx), cy:Y(Math.max(y0,d.ace)), r:2.6,
+      fill: d.deficit ? C.crit : C.ink3, opacity: d.deficit ? 0.72 : 0.42}));
+  });
+  const E = Array.from({length:81},(_,i)=>i/4);
+  svg.appendChild(el("polyline",{points:E.map(e=>`${X(e)},${Y(Math.min(100,esperado(e,63)))}`).join(" "),
+    fill:"none", stroke:C.blue, "stroke-width":2.4}));
+  svg.appendChild(el("polyline",{points:E.map(e=>`${X(e)},${Y(p5de(e,63))}`).join(" "),
+    fill:"none", stroke:C.blue, "stroke-width":1.6, "stroke-dasharray":"2.5 3.5"}));
+  svg.appendChild(el("path",{d:`M ${X(0)} ${Y(68)} L ${X(11.5)} ${Y(68)} L ${X(11.5)} ${Y(86)} L ${X(20)} ${Y(86)}`,
+    fill:"none", stroke:C.crit, "stroke-width":2.4}));
+}
+function drawCompare(){
+  const D = SIM.data, tb = $("cmp"); tb.textContent = "";
+  const con = D.filter(d=>d.deficit), sin = D.filter(d=>!d.deficit);
+  const pc = (num,den) => den ? (100*num/den) : NaN;
+  const sensA = pc(con.filter(d=>d.señala).length, con.length);
+  const sensB = pc(con.filter(d=>d.aparta).length, con.length);
+  const espA  = pc(sin.filter(d=>!d.señala).length, sin.length);
+  const espB  = pc(sin.filter(d=>!d.aparta).length, sin.length);
+  const baja = sin.filter(d=>d.edu < 7), alta = sin.filter(d=>d.edu >= 12);
+  const fpA_b = pc(baja.filter(d=>d.señala).length, baja.length);
+  const fpB_b = pc(baja.filter(d=>d.aparta).length, baja.length);
+  const fpA_a = pc(alta.filter(d=>d.señala).length, alta.length);
+  const fpB_a = pc(alta.filter(d=>d.aparta).length, alta.length);
+
+  const fmt = v => Number.isNaN(v) ? "—" : tx("pct_fmt")(v);
+  const rows = [
+    [tx("cmp_r1"), tx("cmp_sub_con")(con.length), fmt(sensA), fmt(sensB), true],
+    [tx("cmp_r2"), tx("cmp_sub_sin")(sin.length), fmt(espA), fmt(espB), false],
+    [tx("cmp_r3"), tx("cmp_sub_fp"), fmt(fpA_b), fmt(fpB_b), false],
+    [tx("cmp_r4"), tx("cmp_sub_fp"), fmt(fpA_a), fmt(fpB_a), false],
+    [tx("cmp_r5"), tx("cmp_sub_gap"),
+      Number.isNaN(fpA_b-fpA_a) ? "—" : nf(Math.abs(fpA_b-fpA_a)) + " pp",
+      Number.isNaN(fpB_b-fpB_a) ? "—" : nf(Math.abs(fpB_b-fpB_a)) + " pp", true]
+  ];
+  rows.forEach(([lab,sub,a,b,key])=>{
+    const tr = hel("tr"); if(key) tr.className = "key";
+    const th = hel("th",{scope:"row"}); th.appendChild(document.createTextNode(lab));
+    th.appendChild(hel("small",{},sub)); tr.appendChild(th);
+    const ta = hel("td",{class:"col-a"},a), tbd = hel("td",{class:"col-b"},b);
+    tr.appendChild(ta); tr.appendChild(tbd); tb.appendChild(tr);
+  });
+
+  const gapA = Math.abs(fpA_b-fpA_a), gapB = Math.abs(fpB_b-fpB_a);
+  $("simhead").textContent = con.length === 0
+    ? tx("simhead0")(sin.length, nf(fpA_b), nf(fpA_a))
+    : tx("simhead1")(nf(sensA), nf(sensB), nf(gapA), nf(gapB));
+}
+
+/* ── eventos ────────────────────────────────────────────────────────── */
+["edu","edad","ace"].forEach(id=>{
+  $(id).addEventListener("input", e=>{ S[id === "ace" ? "ace" : id] = +e.target.value; render(); });
+});
+$("sexo").addEventListener("click", e=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  [...$("sexo").children].forEach(b=>b.setAttribute("aria-pressed", String(b===btn)));
+  S.sexo = btn.dataset.s; render();
+});
+$("presets").addEventListener("click", e=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  const [edu,edad,ace] = btn.dataset.p.split(",").map(Number);
+  S.edu = edu; S.edad = edad; S.ace = ace;
+  $("edu").value = edu; $("edad").value = edad; $("ace").value = ace;
+  render();
+});
+$("n").addEventListener("input", e=>{ SIM.n = +e.target.value; $("n-v").textContent = SIM.n; simulate(); });
+$("prev").addEventListener("input", e=>{
+  SIM.prev = +e.target.value; $("prev-v").innerHTML = `${SIM.prev} <small>%</small>`; simulate(); });
+$("def").addEventListener("input", e=>{
+  SIM.def = +e.target.value; $("def-v").innerHTML = `${SIM.def} <small>${tx("u_pts")}</small>`; simulate(); });
+$("run").addEventListener("click", simulate);
+$("idioma").addEventListener("click", ()=>{
+  LANG = LANG === "en" ? "es" : "en";
+  try{ localStorage.setItem("idioma", LANG); }catch(e){}
+  aplicarIdioma(); render(); drawScatter(); drawCompare();
+});
+
+const mq = window.matchMedia("(prefers-color-scheme: dark)");
+mq.addEventListener("change", ()=>{ drawChart(); drawScatter(); });
+new MutationObserver(()=>{ drawChart(); drawScatter(); })
+  .observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+
+aplicarIdioma(); render(); simulate();
+
+/* ── casos de prueba embebidos ──────────────────────────────────────────
+   Valores esperados computados con python3 (scipy) con los mismos coeficientes
+   del estudio (modelo de dos pasos y ajuste beta-binomial):
+   percentil del modelo de esta página (normal de dos pasos con Harvey) y percentil
+   mid-p de la beta-binomial. Numéricos puros, independientes del idioma
+   de la interfaz. Corre al cargar; silencioso si pasa. */
+(function(){
+  const CASOS = [
+    /* [edad, edu, sexo, ace, pct modelo de dos pasos, pct beta-binomial] */
+    [65,  0, "M", 68, 81.9892, 82.1364],
+    [65, 11, "M", 68,  6.7311,  7.5268],
+    [65, 12, "M", 86, 68.7807, 65.0946]
+  ];
+  const TOL = 0.2;
+  CASOS.forEach(([edad,edu,sexo,ace,espN,espBB])=>{
+    const e = esperado(edu,edad,sexo), sg = sigma(edu,edad);
+    const pn = 100*Phi((ace-e)/sg);
+    const pb = pctBB(edu,edad,sexo,ace);
+    if(Math.abs(pn-espN) > TOL)
+      console.error(`Test calculadora: modelo de dos pasos se desvía en (${edad} a, ${edu} edu, ` +
+        `${sexo}, ACE ${ace}): JS ${pn.toFixed(4)} vs esperado ${espN} (tolerancia ${TOL})`);
+    if(Math.abs(pb-espBB) > TOL)
+      console.error(`Test calculadora: beta-binomial se desvía en (${edad} a, ${edu} edu, ` +
+        `${sexo}, ACE ${ace}): JS ${pb.toFixed(4)} vs esperado ${espBB} (tolerancia ${TOL})`);
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var b=document.getElementById("tema");
+  var pref=null;
+  try{ pref=localStorage.getItem("tema"); }catch(e){}
+  function sistema(){ return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; }
+  /* el rótulo sigue al idioma de la página (atributo lang, que fija la calculadora) */
+  function textos(){
+    return document.documentElement.lang==="es"
+      ? {aClaro:"Tema claro", aOscuro:"Tema oscuro",
+         lClaro:"Cambiar a tema claro", lOscuro:"Cambiar a tema oscuro"}
+      : {aClaro:"Light theme", aOscuro:"Dark theme",
+         lClaro:"Switch to light theme", lOscuro:"Switch to dark theme"};
+  }
+  function rotular(){
+    var t=document.documentElement.getAttribute("data-theme"), x=textos();
+    b.textContent = t==="dark" ? x.aClaro : x.aOscuro;
+    b.setAttribute("aria-label", t==="dark" ? x.lClaro : x.lOscuro);
+  }
+  function aplicar(t){
+    document.documentElement.setAttribute("data-theme",t);
+    rotular();
+  }
+  aplicar(pref || sistema());
+  b.addEventListener("click", function(){
+    var t = document.documentElement.getAttribute("data-theme")==="dark" ? "light" : "dark";
+    try{ localStorage.setItem("tema",t); }catch(e){}
+    aplicar(t);
+  });
+  new MutationObserver(rotular)
+    .observe(document.documentElement, {attributes:true, attributeFilter:["lang"]});
+})();
+</script>
+</body>
+</html>
