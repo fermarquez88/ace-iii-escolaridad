@@ -96,12 +96,12 @@ body{
   letter-spacing:-.021em; line-height:1.16; text-wrap:balance}
 .mast-sub{margin:9px 0 0; color:var(--ink-2); font-size:14px; max-width:56ch}
 .flag{
-  flex:0 0 auto; max-width:32ch; border:1px solid var(--rule-2); border-left:3px solid var(--warn);
-  background:var(--warn-soft); padding:10px 13px; font-size:12.2px; line-height:1.45; color:var(--ink-2);
+  order:3; flex:1 1 100%; max-width:none; margin:0; border:1px solid var(--rule-2); border-left:3px solid var(--warn);
+  background:var(--warn-soft); padding:11px 16px; font-size:13px; line-height:1.5; color:var(--ink-2);
 }
 .flag b{color:var(--ink); font-weight:620}
 /* selector de idioma (EN ⇄ ES) */
-.lang{flex:0 0 auto; align-self:flex-start; background:var(--sunk); border:1px solid var(--rule-2);
+.lang{order:2; flex:0 0 auto; align-self:flex-start; background:var(--sunk); border:1px solid var(--rule-2);
   color:var(--ink-2); font-family:var(--mono); font-size:11px; letter-spacing:.09em;
   text-transform:uppercase; padding:6px 11px; cursor:pointer}
 .lang:hover{border-color:var(--ink-3); color:var(--ink)}
@@ -257,6 +257,7 @@ th.herecol{color:var(--ink)}
   font-family:var(--sans);cursor:pointer;box-shadow:var(--shadow);line-height:1.2}
 .tema:hover{color:var(--ink);border-color:var(--ink-3)}
 @media print{.tema{display:none}}
+@media (max-width:640px){.masthead .wrap{padding-top:62px}}
 </style>
 
 <header class="masthead">
