@@ -517,7 +517,9 @@ const N_REF = 342;
    que 5 queda escrito ni se puede deducir. Formato: [desde, hasta, controles en la banda]. */
 const EDU_BANDAS = [[0,1,9],[2,2,10],[3,3,12],[4,4,5],[5,5,9],[6,6,29],[7,7,70],[8,8,8],
   [9,9,24],[10,10,8],[11,11,8],[12,12,53],[13,13,11],[14,14,9],[15,15,30],[16,16,11],
-  [17,17,10],[18,18,14],[19,20,6]];
+  [17,17,10],[18,20,26]];
+/* Los controles con más de 20 años de escolaridad se agrupan en la banda 18–20, como en el
+   estudio; así las bandas suman los 342 controles. */
 const EDU_W = EDU_BANDAS.flatMap(([a,b,n]) => Array(b-a+1).fill(n/(b-a+1)));
 const EDU_CUM = EDU_W.reduce((a,v)=>(a.push((a[a.length-1]||0)+v),a),[]);
 const EDU_TOT = EDU_CUM[EDU_CUM.length-1];
@@ -694,7 +696,7 @@ en:{
   f1_h:"How it was estimated",
   f1_p:`Regression of the total score on years of education, its square, age, and sex, with a second model for the dispersion — <code>log(residual²) ~ education + age</code> — that lets variability change with education. The dispersion includes Harvey's correction, without which it would be underestimated 1.9-fold. Calibration: within the sample, 5.8% of controls fall below the nominal 5th percentile of the model shown here; under cross-validation, 5.6% fall below it with the beta-binomial model used as a robustness check.`,
   f2_h:"Who it describes",
-  f2_p:`The sample comprises 342 community participants from San Juan who meet four conditions — word-list recognition score ≥ 10, no stroke, no head trauma, and independence in basic activities of daily living — a criterion independent of the ACE-III and with no educational gradient (χ² p = 0.504). The values are not population norms but a methodological demonstration based on these controls. The sample may include undetected mild impairment, which would make the 5th percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse below 3 years of education.`,
+  f2_p:`The sample comprises 342 community participants from San Juan who meet four conditions — word-list recognition score ≥ 10, no stroke, no head trauma, and independence in basic activities of daily living — a criterion independent of the ACE-III and with no educational gradient (χ² p = 0.504). The values are not population norms but a methodological demonstration based on these controls. The sample may include undetected mild impairment, which would make the 5th percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse below 3 years of education. The participants were assessed in Neuromentia, the community dementia screening program led by Dr. Martín Bruno (Universidad Católica de Cuyo, San Juan).`,
   f3_h:"What it does not do",
   f3_p:`It neither diagnoses nor replaces clinical assessment. A score below the 5th percentile indicates that such performance is uncommon among unimpaired people of the same education and age; nothing more.`,
   f4_h:"Origin of the two-step rule",
@@ -769,7 +771,7 @@ es:{
   f1_h:"Cómo se estimó",
   f1_p:`Regresión del puntaje total sobre escolaridad, escolaridad al cuadrado, edad y sexo, con un segundo modelo para la dispersión — <code>log(residuo²) ~ escolaridad + edad</code> — que permite que la variabilidad cambie con la escolaridad. La dispersión lleva la corrección de Harvey, sin la cual quedaría subestimada 1,9 veces. Calibración: dentro de la muestra, el 5,8 % de los controles cae bajo el percentil 5 nominal del modelo de esta página; con validación cruzada, el 5,6 % cae bajo ese percentil con el modelo beta-binomial, usado como verificación de robustez.`,
   f2_h:"Sobre quiénes",
-  f2_p:`La muestra está formada por 342 participantes comunitarios de San Juan que cumplen cuatro condiciones —puntaje de reconocimiento de la lista de palabras ≥ 10, sin accidente cerebrovascular, sin traumatismo de cráneo e independientes en las actividades básicas de la vida diaria—, un criterio independiente del ACE-III y sin gradiente educativo (χ² p = 0,504). Los valores no son normas poblacionales: son una demostración metodológica sobre esos controles. La muestra puede contener deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. La mayoría de los controles tiene entre 50 y 80 años; con menos de 3 años de escolaridad, los datos son escasos.`,
+  f2_p:`La muestra está formada por 342 participantes comunitarios de San Juan que cumplen cuatro condiciones —puntaje de reconocimiento de la lista de palabras ≥ 10, sin accidente cerebrovascular, sin traumatismo de cráneo e independientes en las actividades básicas de la vida diaria—, un criterio independiente del ACE-III y sin gradiente educativo (χ² p = 0,504). Los valores no son normas poblacionales: son una demostración metodológica sobre esos controles. La muestra puede contener deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. La mayoría de los controles tiene entre 50 y 80 años; con menos de 3 años de escolaridad, los datos son escasos. Los participantes fueron evaluados en Neuromentia, el programa comunitario de detección de demencia que dirige el Dr. Martín Bruno (Universidad Católica de Cuyo, San Juan).`,
   f3_h:"Qué no hace",
   f3_p:`No diagnostica ni reemplaza la evaluación clínica. Un puntaje por debajo del percentil 5 indica que ese rendimiento es infrecuente en personas sin deterioro de la misma escolaridad y edad; nada más que eso.`,
   f4_h:"Procedencia de la regla de dos escalones",

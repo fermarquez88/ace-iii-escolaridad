@@ -10,6 +10,6 @@ Calculadora web del rendimiento esperado en el Addenbrooke's Cognitive Examinati
 
 **Supresión de celdas chicas / Small-cell suppression.** Weights by years of education are grouped so that no band has fewer than 5 controls. (Los pesos por años de escolaridad se agrupan de modo que ninguna banda tenga menos de 5 controles.)
 
-Author: Dr. Fernando Márquez, Memory and Brain Health Unit, Hospital Dr. Guillermo Rawson (San Juan, Argentina), developed in agreement with Dr. Diana Bruno. / Autor: Dr. Fernando Márquez, Unidad de Memoria y Salud Cerebral, Hospital Dr. Guillermo Rawson (San Juan, Argentina), con el acuerdo de la Dra. Diana Bruno. Parte del trabajo sobre escolaridad y puntos de corte del ACE-III en San Juan, en reescritura para su publicación.
+Reference group: 342 community controls assessed in Neuromentia, the community dementia screening program led by Dr. Martín Bruno (Universidad Católica de Cuyo, San Juan). Author: Dr. Fernando Márquez, Memory and Brain Health Unit, Hospital Dr. Guillermo Rawson (San Juan, Argentina), developed in agreement with Dr. Diana Bruno. / Autor: Dr. Fernando Márquez, Unidad de Memoria y Salud Cerebral, Hospital Dr. Guillermo Rawson (San Juan, Argentina), con el acuerdo de la Dra. Diana Bruno. Parte del trabajo sobre escolaridad y puntos de corte del ACE-III en San Juan, en reescritura para su publicación.
 
 Licencia MIT.
