@@ -6,7 +6,7 @@
 <title>Education-adjusted ACE-III calculator</title>
 <meta name="description" content="Education-adjusted ACE-III calculator: expected ACE-III score by years of education and age, with a reference table and a cohort simulator. Research prototype built from 342 community controls; illustrative values, not population norms. Calculadora del ACE-III ajustada por escolaridad (EN/ES).">
 <meta name="color-scheme" content="light dark">
-<meta name="author" content="Fernando Márquez, Memory and Brain Health Unit, Hospital Dr. Guillermo Rawson, San Juan, Argentina; developed in agreement with Dr. Diana Bruno">
+<meta name="author" content="Fernando Márquez, Memory and Brain Health Unit, Hospital Dr. Guillermo Rawson, San Juan, Argentina. Published with the agreement of Dr. Diana Bruno.">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Education-adjusted ACE-III calculator">
@@ -15,7 +15,6 @@
 <meta property="og:locale:alternate" content="es_AR">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
 <style>
-/* reset mínimo */
 *,*::before,*::after{box-sizing:border-box}
 html{-moz-text-size-adjust:none;-webkit-text-size-adjust:none;text-size-adjust:none}
 body,h1,h2,h3,h4,p,figure,blockquote,dl,dd{margin:0}
@@ -270,7 +269,7 @@ th.herecol{color:var(--ink)}
         what is expected for their education and age.</p>
     </div>
     <p class="flag" data-i18n="flag"><b>Illustrative values.</b> They come from 342 community participants in
-      San Juan who meet the study's control criterion: word-list recognition score ≥ 10, no history of stroke or
+      San Juan, assessed by Dr. Martín Bruno's community screening program, who meet the study's control criterion: word-list recognition score ≥ 10, no history of stroke or
       head trauma, and independence in basic activities of daily living. <b>Not population norms:</b> a
       methodological demonstration based on those 342 controls. The control group may include people with
       undetected mild impairment, which would make the 5th percentile a lenient threshold. <b>Do not use
@@ -297,7 +296,7 @@ th.herecol{color:var(--ink)}
         </div>
         <div class="field">
           <label for="edad"><span data-i18n="lbl_edad">Age</span> <span class="val" id="edad-v">65 <small>yrs</small></span></label>
-          <input type="range" id="edad" min="46" max="85" step="1" value="65">
+          <input type="range" id="edad" min="40" max="90" step="1" value="65">
         </div>
         <div class="field">
           <span class="lbl" data-i18n="lbl_sexo">Sex</span>
@@ -465,22 +464,11 @@ th.herecol{color:var(--ink)}
   <div class="wrap">
     <div>
       <h4 data-i18n="f1_h">How it was estimated</h4>
-      <p data-i18n="f1_p">Regression of the total score on years of education, its square, age, and sex,
-        with a second model for the dispersion — <code>log(residual²) ~ education + age</code> — that lets
-        variability change with education. The dispersion includes Harvey's correction, without which it
-        would be underestimated 1.9-fold. Calibration: within the sample, 5.8% of controls fall below the
-        nominal 5th percentile of the model shown here; under cross-validation, 5.6% fall below it with the
-        beta-binomial model used as a robustness check.</p>
+      <p data-i18n="f1_p">Regression of the total score on years of education, its square, age, and sex, with a second model for the dispersion, log(residual²) ~ education + age, that lets variability change with education. The dispersion includes Harvey's correction, without which it would be underestimated 1.9-fold. Within the sample, 5.8% of controls fall below the nominal 5th percentile of the model shown here; under cross-validation, 5.6% fall below it with the beta-binomial model used as a robustness check.</p>
     </div>
     <div>
       <h4 data-i18n="f2_h">Who it describes</h4>
-      <p data-i18n="f2_p">The sample comprises 342 community participants from San Juan who meet four
-        conditions — word-list recognition score ≥ 10, no stroke, no head trauma, and independence in basic
-        activities of daily living — a criterion independent of the ACE-III and with no educational gradient
-        (χ² p = 0.504). The values are not population norms but a methodological demonstration based on
-        these controls. The sample may include undetected mild impairment, which would make the 5th
-        percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse
-        below 3 years of education.</p>
+      <p data-i18n="f2_p">The sample comprises 342 community-dwelling adults from San Juan assessed by Neuromentia, the community screening program led by Dr. Martín Bruno (Instituto de Ciencias Biomédicas, Universidad Católica de Cuyo, with the IIPBA and Fundación Alzheimer San Juan). They meet four conditions (word-list recognition score of 10 or more, no stroke, no head trauma, and independence in basic activities of daily living), a criterion independent of the ACE-III and with no educational gradient (χ² p = 0.504). The values are not population norms but a methodological demonstration based on these controls. The sample may include undetected mild impairment, which would make the 5th percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse below 3 years of education. Education is shown from 0 to 20 years; the six controls with more than 20 years are counted in the 18 to 20 band.</p>
     </div>
     <div>
       <h4 data-i18n="f3_h">What it does not do</h4>
@@ -632,7 +620,7 @@ en:{
   eyebrow:"Memory and Brain Health Unit · Hospital Rawson · San Juan · research prototype",
   h1:"Education-adjusted ACE-III calculator",
   mast_sub:`Expected ACE-III score by years of education and age. The current rule compares everyone against one of two numbers. This tool compares each person against what is expected for their education and age.`,
-  flag:`<b>Illustrative values.</b> They come from 342 community participants in San Juan who meet the study's control criterion: word-list recognition score ≥ 10, no history of stroke or head trauma, and independence in basic activities of daily living. <b>Not population norms:</b> a methodological demonstration based on those 342 controls. The control group may include people with undetected mild impairment, which would make the 5th percentile a lenient threshold. <b>Do not use these values to make decisions about a patient.</b>`,
+  flag:`<b>Illustrative values.</b> They come from 342 community participants in San Juan, assessed by Dr. Martín Bruno's community screening program, who meet the study's control criterion: word-list recognition score ≥ 10, no history of stroke or head trauma, and independence in basic activities of daily living. <b>Not population norms:</b> a methodological demonstration based on those 342 controls. The control group may include people with undetected mild impairment, which would make the 5th percentile a lenient threshold. <b>Do not use these values to make decisions about a patient.</b>`,
   a_h2:"Assess an individual",
   a_p:"The two rules are applied in parallel to the same data.",
   lbl_edu:"Education", lbl_edad:"Age", lbl_sexo:"Sex", lbl_ace:"ACE-III score", lbl_ej:"Fictitious examples",
@@ -694,9 +682,9 @@ en:{
   simhead0:(n,a,b)=>`Among ${n} people without a deficit, ${a}% of those with fewer than 7 years of education and ${b}% of those with 12 or more years score below the current cutoff.`,
   simhead1:(sa,sb,ga,gb)=>`With sensitivity of ${sa}% (current rule) and ${sb}% (continuous model), the false-positive rate of the current rule differs by ${ga} ${ga==="1"?"percentage point":"percentage points"} between the lowest and highest education groups; that of the continuous model, by ${gb}.`,
   f1_h:"How it was estimated",
-  f1_p:`Regression of the total score on years of education, its square, age, and sex, with a second model for the dispersion — <code>log(residual²) ~ education + age</code> — that lets variability change with education. The dispersion includes Harvey's correction, without which it would be underestimated 1.9-fold. Calibration: within the sample, 5.8% of controls fall below the nominal 5th percentile of the model shown here; under cross-validation, 5.6% fall below it with the beta-binomial model used as a robustness check.`,
+  f1_p:`Regression of the total score on years of education, its square, age, and sex, with a second model for the dispersion, log(residual²) ~ education + age, that lets variability change with education. The dispersion includes Harvey's correction, without which it would be underestimated 1.9-fold. Within the sample, 5.8% of controls fall below the nominal 5th percentile of the model shown here; under cross-validation, 5.6% fall below it with the beta-binomial model used as a robustness check.`,
   f2_h:"Who it describes",
-  f2_p:`The sample comprises 342 community participants from San Juan who meet four conditions — word-list recognition score ≥ 10, no stroke, no head trauma, and independence in basic activities of daily living — a criterion independent of the ACE-III and with no educational gradient (χ² p = 0.504). The values are not population norms but a methodological demonstration based on these controls. The sample may include undetected mild impairment, which would make the 5th percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse below 3 years of education. The participants were assessed in Neuromentia, the community dementia screening program led by Dr. Martín Bruno (Universidad Católica de Cuyo, San Juan).`,
+  f2_p:`The sample comprises 342 community-dwelling adults from San Juan assessed by Neuromentia, the community screening program led by Dr. Martín Bruno (Instituto de Ciencias Biomédicas, Universidad Católica de Cuyo, with the IIPBA and Fundación Alzheimer San Juan). They meet four conditions (word-list recognition score of 10 or more, no stroke, no head trauma, and independence in basic activities of daily living), a criterion independent of the ACE-III and with no educational gradient (χ² p = 0.504). The values are not population norms but a methodological demonstration based on these controls. The sample may include undetected mild impairment, which would make the 5th percentile a lenient threshold. Most controls are between 50 and 80 years old; data are sparse below 3 years of education. Education is shown from 0 to 20 years; the six controls with more than 20 years are counted in the 18 to 20 band.`,
   f3_h:"What it does not do",
   f3_p:`It neither diagnoses nor replaces clinical assessment. A score below the 5th percentile indicates that such performance is uncommon among unimpaired people of the same education and age; nothing more.`,
   f4_h:"Origin of the two-step rule",
@@ -707,7 +695,7 @@ es:{
   eyebrow:"Unidad de Memoria y Salud Cerebral · Hospital Rawson · San Juan · prototipo de investigación",
   h1:"Calculadora del ACE-III ajustada por escolaridad",
   mast_sub:`Rendimiento esperado en el ACE-III según escolaridad y edad. La regla vigente compara a todos contra uno de dos números. Esta herramienta compara a cada persona contra lo esperable para su escolaridad y su edad.`,
-  flag:`<b>Valores ilustrativos.</b> Provienen de 342 participantes comunitarios de San Juan que cumplen el criterio de control del estudio: puntaje de reconocimiento de la lista de palabras ≥ 10, sin antecedente de accidente cerebrovascular ni de traumatismo de cráneo, e independientes en las actividades básicas de la vida diaria. <b>No son normas poblacionales:</b> son una demostración metodológica sobre esos 342 controles. El grupo control puede incluir personas con deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. <b>No deben usarse para decidir sobre un paciente.</b>`,
+  flag:`<b>Valores ilustrativos.</b> Provienen de 342 participantes comunitarios de San Juan, evaluados por el programa comunitario de tamizaje del Dr. Martín Bruno, que cumplen el criterio de control del estudio: puntaje de reconocimiento de la lista de palabras ≥ 10, sin antecedente de accidente cerebrovascular ni de traumatismo de cráneo, e independientes en las actividades básicas de la vida diaria. <b>No son normas poblacionales:</b> son una demostración metodológica sobre esos 342 controles. El grupo control puede incluir personas con deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. <b>No deben usarse para decidir sobre un paciente.</b>`,
   a_h2:"Evaluar una persona",
   a_p:"Las dos reglas se aplican en paralelo sobre los mismos datos.",
   lbl_edu:"Escolaridad", lbl_edad:"Edad", lbl_sexo:"Sexo", lbl_ace:"Puntaje ACE-III", lbl_ej:"Ejemplos ficticios",
@@ -769,9 +757,9 @@ es:{
   simhead0:(n,a,b)=>`Entre ${n} personas sin déficit, la regla vigente señala al ${a} % de las de menos de 7 años de escolaridad y al ${b} % de las de 12 años o más.`,
   simhead1:(sa,sb,ga,gb)=>`Con una detección de ${sa} % frente a ${sb} %, los señalamientos sin motivo de la regla vigente varían ${ga} ${ga==="1"?"punto porcentual":"puntos porcentuales"} entre los extremos de escolaridad; los del modelo continuo, ${gb}.`,
   f1_h:"Cómo se estimó",
-  f1_p:`Regresión del puntaje total sobre escolaridad, escolaridad al cuadrado, edad y sexo, con un segundo modelo para la dispersión — <code>log(residuo²) ~ escolaridad + edad</code> — que permite que la variabilidad cambie con la escolaridad. La dispersión lleva la corrección de Harvey, sin la cual quedaría subestimada 1,9 veces. Calibración: dentro de la muestra, el 5,8 % de los controles cae bajo el percentil 5 nominal del modelo de esta página; con validación cruzada, el 5,6 % cae bajo ese percentil con el modelo beta-binomial, usado como verificación de robustez.`,
+  f1_p:`Regresión del puntaje total sobre escolaridad, escolaridad al cuadrado, edad y sexo, con un segundo modelo para la dispersión, log(residuo²) ~ escolaridad + edad, que permite que la variabilidad cambie con la escolaridad. La dispersión lleva la corrección de Harvey, sin la cual quedaría subestimada 1,9 veces. Dentro de la muestra, el 5,8 % de los controles cae bajo el percentil 5 nominal del modelo de esta página; con validación cruzada, el 5,6 % cae bajo ese percentil con el modelo beta-binomial, usado como verificación de robustez.`,
   f2_h:"Sobre quiénes",
-  f2_p:`La muestra está formada por 342 participantes comunitarios de San Juan que cumplen cuatro condiciones —puntaje de reconocimiento de la lista de palabras ≥ 10, sin accidente cerebrovascular, sin traumatismo de cráneo e independientes en las actividades básicas de la vida diaria—, un criterio independiente del ACE-III y sin gradiente educativo (χ² p = 0,504). Los valores no son normas poblacionales: son una demostración metodológica sobre esos controles. La muestra puede contener deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. La mayoría de los controles tiene entre 50 y 80 años; con menos de 3 años de escolaridad, los datos son escasos. Los participantes fueron evaluados en Neuromentia, el programa comunitario de detección de demencia que dirige el Dr. Martín Bruno (Universidad Católica de Cuyo, San Juan).`,
+  f2_p:`La muestra está formada por 342 adultos de la comunidad de San Juan evaluados por Neuromentia, el programa comunitario de tamizaje que dirige el Dr. Martín Bruno (Instituto de Ciencias Biomédicas, Universidad Católica de Cuyo, con el IIPBA y la Fundación Alzheimer San Juan). Cumplen cuatro condiciones (puntaje de reconocimiento de la lista de palabras de 10 o más, sin accidente cerebrovascular, sin traumatismo de cráneo e independientes en las actividades básicas de la vida diaria), un criterio independiente del ACE-III y sin gradiente educativo (χ² p = 0,504). Los valores no son normas poblacionales, sino una demostración metodológica sobre esos controles. La muestra puede contener deterioro leve no detectado, lo que haría del percentil 5 un umbral indulgente. La mayoría de los controles tiene entre 50 y 80 años; con menos de 3 años de escolaridad, los datos son escasos. La escolaridad se muestra de 0 a 20 años; los seis controles con más de 20 años se cuentan en la banda de 18 a 20.`,
   f3_h:"Qué no hace",
   f3_p:`No diagnostica ni reemplaza la evaluación clínica. Un puntaje por debajo del percentil 5 indica que ese rendimiento es infrecuente en personas sin deterioro de la misma escolaridad y edad; nada más que eso.`,
   f4_h:"Procedencia de la regla de dos escalones",
@@ -997,8 +985,8 @@ function simulate(){
   const out = [];
   for(let i=0;i<SIM.n;i++){
     const edu = sampleEdu();
-    let edad = Math.round(63.3 + 8.3*randn());
-    edad = Math.max(46, Math.min(85, edad));
+    let edad = Math.round(62.6 + 7.8*randn());
+    edad = Math.max(40, Math.min(90, edad));
     const sexo = Math.random() < P_MUJER ? "M" : "H";
     const deficit = Math.random() < SIM.prev/100;
     const base = esperado(edu,edad,sexo) - (deficit ? SIM.def : 0);

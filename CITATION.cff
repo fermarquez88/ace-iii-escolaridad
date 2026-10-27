@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this calculator, please cite it as below."
+type: software
+title: "Education-adjusted ACE-III calculator: a research prototype"
+authors:
+  - family-names: "Márquez"
+    given-names: "Fernando"
+    affiliation: "Memory and Brain Health Unit, Hospital Dr. Guillermo Rawson, San Juan, Argentina"
+    orcid: "https://orcid.org/0000-0003-1169-2834"
+version: "1.1"
+date-released: "2026-10-20"
+url: "https://fermarquez88.github.io/ace-iii-escolaridad/"
+repository-code: "https://github.com/fermarquez88/ace-iii-escolaridad"
+license: MIT
+keywords:
+  - ACE-III
+  - cognitive screening
+  - education-adjusted norms
+  - neuropsychology
+  - Argentina
